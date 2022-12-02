@@ -1,0 +1,17 @@
+<form action="/update" method="post" enctype="multipart/form-data">
+    ID: <input type="text" value="{{employees[0]}}" name="txtId" id="txtId"><br>
+    Name: <input type="text" value="{{employees[1]}}" name="txtName" id="txtName"><br>
+    Mail: <input type="text" value="{{employees[2]}}" name="txtMail" id="txtMail"><br>
+
+    Photo: {{employees[3]}} <input type="file" name="txtPhoto" id="txtPhoto">
+    <br>
+    <input type="submit" value="Update">
+</form>
+
+<!-- 
+    <br><br>
+    {{employees[0]}} <br>
+    {{employees[1]}} <br>
+    {{employees[2]}} <br>
+    {{employees[3]}} <br>
+     -->

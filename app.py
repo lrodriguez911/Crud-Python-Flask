@@ -1,6 +1,8 @@
 from flask import Flask  # import framework
 from flask import render_template, request, redirect
 from flaskext.mysql import MySQL
+from datetime import datetime
+import os
 
 
 app = Flask(__name__)
@@ -13,15 +15,20 @@ app.config['MYSQL_DATABASE_BD'] = 'sistema_empleados'
 mysql.init_app(app)
 
 
+FOLDER = os.path.join('uploads')
+app.config['FOLDER'] = FOLDER
+print(FOLDER)
+
 @app.route('/')
 def index():
-    sql = "INSERT INTO `sistema_empleados`.`employees` (`id`, `name`, `mail`, `photo`) VALUES (NULL, 'Lucas Rodriguez', 'lrodriguez.arevalosc@gmail.com', 'photo.png');"
+    sql = f"SELECT * FROM sistema_empleados.employees;"
     conn = mysql.connect()
     cursor = conn.cursor()
-    #cursor.execute(sql)
+    cursor.execute(sql)
+    employees = cursor.fetchall()
+    #print(employees)
     conn.commit()
-    return render_template('employees/index.html')
-
+    return render_template('employees/index.html', employees=employees)
 
 
 @app.route('/create')
@@ -31,16 +38,81 @@ def create():
 
 @app.route('/store', methods=['POST'])
 def storage():
-    name = request.form['txtName']
-    mail = request.form['txtMail']
-    photo = request.files['txtPhoto']
-    sql = "INSERT INTO `sistema_empleados`.`employees` (`id`, `name`, `mail`, `photo`) VALUES (NULL, %s, %s, %s);"
-    datos = (name, mail, photo.filename)
+    _name = request.form['txtName']
+    _mail = request.form['txtMail']
+    _photo = request.files['txtPhoto']
+
+    now = datetime.now()  # time and date of upload
+    time = now.strftime("%Y%H%M%S")
+
+    if _photo.filename != '':
+        newNamePhoto = time + _photo.filename
+        _photo.save("uploads/" + newNamePhoto)
+
+    sql = f"INSERT INTO `sistema_empleados`.`employees` (`id`, `name`, `mail`, `photo`) VALUES (NULL, '{_name}', '{_mail}', '{newNamePhoto}');"
+    #datos = (_name, _mail, newNamePhoto)
     conn = mysql.connect()
     cursor = conn.cursor()
-    cursor.execute(sql, datos)
+    cursor.execute(sql)
     conn.commit()
-    return redirect('employees/create.html')
+    return redirect('/')
+
+
+@app.route('/destroy/<int:id>')
+def destroy(id):
+    sql = f"DELETE FROM sistema_empleados.employees WHERE id='{id}';"
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(f"SELECT photo FROM sistema_empleados.employees WHERE id='{id}';")
+    row = cursor.fetchall()
+    os.remove(os.path.join(app.config['FOLDER'], row[0][0]))
+
+    cursor.execute(sql, id)
+    conn.commit()
+    return redirect("/")
+
+
+@app.route('/edit/<int:id>')
+def edit(id):
+    sql = f"SELECT * FROM `sistema_empleados`.`employees` WHERE id='{id}'"
+    conn = mysql.connect()
+    cursor = conn.cursor()
+    cursor.execute(sql)
+    employees = cursor.fetchone()
+    conn.commit()
+    return render_template('employees/edit.html', employees=employees)
+
+
+@app.route('/update', methods=['POST'])
+def update():
+    _name = request.form['txtName']
+    _mail = request.form['txtMail']
+    _photo = request.files['txtPhoto']
+    id = request.form['txtId']
+
+    sql = f"UPDATE sistema_employees.employees SET name='{_name}', mail='{_mail}' WHERE id='{id}';"
+    
+    conn = mysql.connect()
+    cursor = conn.cursor()
+
+    now = datetime.now()  # time and date of upload
+    time = now.strftime("%Y%H%M%S")
+
+    if _photo.filename != '':
+        newNamePhoto = time + _photo.filename
+        _photo.save("uploads/"+newNamePhoto)
+
+        cursor.execute(f"SELECT photo FROM sistema_empleados.employees WHERE id='{id}';")
+        row = cursor.fetchall()
+        os.remove(os.path.join(app.config['FOLDER'], row[0][0]))
+
+        cursor.execute(f"UPDATE sistema_empleados.employees SET photo='{newNamePhoto}' WHERE id='{id}';")
+        conn.commit()
+        
+    cursor.execute(sql)
+    conn.commit()
+
+    return redirect('/')
 
 
 if __name__ == '__main__':
