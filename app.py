@@ -1,5 +1,5 @@
 from flask import Flask  # import framework
-from flask import render_template, request, redirect
+from flask import render_template, request, redirect, send_from_directory, url_for
 from flaskext.mysql import MySQL
 from datetime import datetime
 import os
@@ -67,7 +67,7 @@ def destroy(id):
     row = cursor.fetchall()
     os.remove(os.path.join(app.config['FOLDER'], row[0][0]))
 
-    cursor.execute(sql, id)
+    cursor.execute(sql)
     conn.commit()
     return redirect("/")
 
@@ -90,7 +90,7 @@ def update():
     _photo = request.files['txtPhoto']
     id = request.form['txtId']
 
-    sql = f"UPDATE sistema_employees.employees SET name='{_name}', mail='{_mail}' WHERE id='{id}';"
+    sql = f"UPDATE sistema_empleados.employees SET name='{_name}', mail='{_mail}' WHERE id='{id}';"
     
     conn = mysql.connect()
     cursor = conn.cursor()
@@ -114,6 +114,9 @@ def update():
 
     return redirect('/')
 
+@app.route('/uploads/<namePhoto>')
+def uploads(namePhoto):
+    return send_from_directory(FOLDER, namePhoto)
 
 if __name__ == '__main__':
     app.run(debug=True)
