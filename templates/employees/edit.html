@@ -1,16 +1,37 @@
 {% include 'header.html' %}
 <form action="/update" method="post" enctype="multipart/form-data">
-    ID: <input type="text" value="{{employees[0]}}" name="txtId" id="txtId"><br>
-    Name: <input type="text" value="{{employees[1]}}" name="txtName" id="txtName"><br>
-    Mail: <input type="text" value="{{employees[2]}}" name="txtMail" id="txtMail"><br>
+    <div class="card">
+        <div class="card-header">
+            Edit employee
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Employee data</h5>
+            <p class="card-text">
 
-    Photo: 
-    <br>
-    <img class="img-thumbnail" width="100" src="{{url_for("uploads", namePhoto=employees[3])}}" alt="">
-    <br>
-    <input type="file" name="txtPhoto" id="txtPhoto">
-    <br>
-    <input type="submit" value="Update">
+                ID: {{employees[0]}} <input type="hidden" value="{{employees[0]}}" name="txtId" id="txtId"><br>
+                <div class="form-group">
+                    <label for="txtName">Name:</label>
+                    <input type="text" value="{{employees[1]}}" name="txtName" id="txtName" class="form-control"><br>
+                </div>
+                <div class="form-group">
+                    <label for="txtMail">Mail:</label>
+                    <input type="text" value="{{employees[2]}}" name="txtMail" id="txtMail" class="form-control"><br>
+                </div>
+                <div class="form-group">
+                    <label for="txtPhoto">Photo: </label>
+                    <img class="img-thumbnail" width="100" src="{{url_for('uploads', namePhoto=employees[3])}}" alt="new photo selected">
+                    <input type="file" name="txtPhoto" id="txtPhoto" class="form-control">
+                </div>
+                <br>
+                <br>
+                <div class="form-group">
+                    <input type="submit" value="Update" class="btn btn-success"/>
+                    <a href="{{url_for("index")}}" class="btn btn-primary">Go back</a>
+                  </div>
+            </p>
+        </div>
+    </div>
+    
 </form>
 
 <!-- 

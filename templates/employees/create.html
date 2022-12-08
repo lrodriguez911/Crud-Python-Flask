@@ -1,8 +1,42 @@
 {% include 'header.html' %}
+
+{% with messages = get_flashed_messages()%}
+
+  {% if messages%}
+    <div class="alert alert-danger" role="alert">
+       {% for message in messages %}
+          {{message}}
+       {% endfor %}
+    </div>
+  {% endif%}
+
+{% endwith%}
+
 <form action="/store" method="post" enctype="multipart/form-data">
-    Name: <input type="text" name="txtName" id="txtName"><br>
-    Mail: <input type="text" name="txtMail" id="txtMail"><br>
-    Photo: <input type="file" name="txtPhoto" id="txtPhoto"><br><br>
-    <input type="submit" value="Add">
+  <div class="card">
+    <div class="card-header">Add new employee</div>
+    <div class="card-body">
+      <h5 class="card-title">Employee data</h5>
+      <p class="card-text">
+        <div class="form-group">
+            <label for="txtName">Name</label>
+            <input type="text" name="txtName" id="txtName"class="form-control"/><br />
+        </div>
+        <div class="form-group">
+            <label for="txtMail">Mail: </label>
+            <input type="text" name="txtMail" id="txtMail"class="form-control"/><br />
+        </div>
+        <div class="form-group">
+            <label for="txtPhoto">Photo: </label>
+            <input type="file" name="txtPhoto" id="txtPhoto"class="form-control"/><br />
+        </div>
+        <div class="form-group">
+          <input type="submit" value="Add" class="btn btn-success"/>
+          <a href="{{url_for("index")}}" class="btn btn-primary">Go back</a>
+        </div>
+        
+      </p>
+    </div>
+  </div>
 </form>
 {% include 'footer.html' %}

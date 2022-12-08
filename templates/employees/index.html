@@ -1,4 +1,8 @@
 {% include 'header.html' %}
+<br>
+<a href="{{url_for('create')}}" class="btn btn-success">Add new employee</a>
+<br>
+<br>
 <table class="table table-light">
   <thead class="thead-light">
     <tr>
@@ -19,8 +23,8 @@
       <td>{{employee[1]}}</td>
       <td>{{employee[2]}}</td>
       <td>
-        <a href="/edit/{{employee[0]}}">Edit </a>|
-        <a href="/destroy/{{employee[0]}}">Delete</a>
+        <a href="/edit/{{employee[0]}}" class="btn btn-warning">Edit </a>|
+        <a href="/destroy/{{employee[0]}}" onclick="return confirm('Are you sure to delete the employee: {{employee[1]}}')" class="btn btn-danger">Delete</a>
       </td>
     </tr>
     {% endfor %}

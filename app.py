@@ -1,11 +1,12 @@
 from flask import Flask  # import framework
-from flask import render_template, request, redirect, send_from_directory, url_for
+from flask import render_template, request, redirect, send_from_directory, url_for, flash
 from flaskext.mysql import MySQL
 from datetime import datetime
 import os
 
 
 app = Flask(__name__)
+app.secret_key="PassSecKey"
 mysql = MySQL()  # creating the object
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -42,6 +43,9 @@ def storage():
     _mail = request.form['txtMail']
     _photo = request.files['txtPhoto']
 
+    if _name == '' or _mail == '' or _photo.filename == '':
+        flash('Please fill every fields')
+        return redirect(url_for('create'))
     now = datetime.now()  # time and date of upload
     time = now.strftime("%Y%H%M%S")
 
